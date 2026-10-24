@@ -1,0 +1,146 @@
+#include <stdio.h>
+#include <conio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+struct Node* createNode(int value) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+
+    if (newNode == NULL) {
+        printf("Memory allocation failed!\n");
+        exit(1);
+    }
+
+    newNode->data = value;
+    newNode->next = NULL;
+    return newNode;
+}
+
+void insertAtBeginning(struct Node** headRef, int value) {
+    struct Node* newNode = createNode(value);
+    newNode->next = *headRef;
+    *headRef = newNode;
+
+    printf("Inserted %d at the beginning.\n", value);
+}
+
+void insertAtEnd(struct Node** headRef, int value) {
+    struct Node* newNode = createNode(value);
+
+    if (*headRef == NULL) {
+        *headRef = newNode;
+        printf("Inserted %d at the end (list was empty).\n", value);
+        return;
+    }
+
+    struct Node* temp = *headRef;
+
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+
+    temp->next = newNode;
+    printf("Inserted %d at the end.\n", value);
+}
+
+void insertAtPosition(struct Node** headRef, int value, int position) {
+    if (position < 1) {
+        printf("Invalid position!\n");
+        return;
+    }
+
+    if (position == 1) {
+        insertAtBeginning(headRef, value);
+        return;
+    }
+
+    struct Node* temp = *headRef;
+
+    for (int i = 1; i < position - 1; i++) {
+        if (temp == NULL) {
+            printf("Invalid position! The list is shorter than expected.\n");
+            return;
+        }
+        temp = temp->next;
+    }
+
+    if (temp == NULL) {
+        printf("Invalid position! Position is out of bounds.\n");
+        return;
+    }
+
+    struct Node* newNode = createNode(value);
+    newNode->next = temp->next;
+    temp->next = newNode;
+
+    printf("Inserted %d at position %d.\n", value, position);
+}
+
+void displayList(struct Node* head) {
+    if (head == NULL) {
+        printf("The list is currently empty.\n");
+        return;
+    }
+
+    struct Node* temp = head;
+    printf("Linked List: ");
+
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+
+    printf("NULL\n");
+}
+
+void freeList(struct Node* head) {
+    struct Node* temp;
+
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+int main(void) {
+    struct Node* head = NULL;
+
+    insertAtBeginning(&head, 10);
+    insertAtBeginning(&head, 20);
+    displayList(head);
+
+    insertAtEnd(&head, 30);
+    insertAtEnd(&head, 40);
+    displayList(head);
+
+    insertAtPosition(&head, 15, 2);
+    displayList(head);
+
+    insertAtPosition(&head, 5, 1);
+    displayList(head);
+
+    insertAtPosition(&head, 100, 10);
+
+    freeList(head);
+    getch();
+
+    return 0;
+}
+//output
+
+Inserted 10 at the beginning.
+Inserted 20 at the beginning.
+Linked List: 20 -> 10 -> NULL
+Inserted 30 at the end.
+Inserted 40 at the end.
+Linked List: 20 -> 10 -> 30 -> 40 -> NULL
+Inserted 15 at position 2.
+Linked List: 20 -> 15 -> 10 -> 30 -> 40 -> NULL
+Inserted 5 at the beginning.
+Linked List: 5 -> 20 -> 15 -> 10 -> 30 -> 40 -> NULL
+Invalid position! The list is shorter than expected.
